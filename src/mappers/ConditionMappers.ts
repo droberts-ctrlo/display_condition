@@ -1,18 +1,18 @@
-import { isNotNullOrUndefined, isNullOrUndefined, isString, isBoolean, isNumber, isObject, isEmptyString, isNotEmptyString } from "typechecks";
+import { isNotNullOrUndefined, isNullOrUndefined, isString, isBoolean, isNumber, isObject, isEmptyString, isNotEmptyString } from '@ctrlo/typechecks';
 
 type precondition = (a: unknown) => boolean;
-type fn = (a: any, b?: any) => boolean;
+type fn = (a: unknown, b?: unknown) => boolean;
 
-type mappedFunction = Record<string, fn>
-type typedMappedFunction = Record<string, mappedFunction>
+type mappedFunction = Record<string, fn>;
+type typedMappedFunction = Record<string, mappedFunction>;
 
-const commonMappedFunctions: (precondition: precondition) => mappedFunction = p => {
+const commonMappedFunctions: (precondition: precondition) => mappedFunction = (p) => {
     return {
         equal: (a, b) => p(a) && p(b) && a === b,
         not_equal: (a, b) => a !== b,
         is_null: isNullOrUndefined,
         is_not_null: isNotNullOrUndefined
-    }
+    };
 };
 
 const stringMappedFunctions: mappedFunction = {
@@ -43,15 +43,15 @@ const integerMappedFunctions: mappedFunction = {
     greater_or_equal: (a: number, b: number) => a >= b,
     between: (a: number, b: number[]) => b[0] <= a && a <= b[1],
     not_between: (a: number, b: number[]) => !(b[0] <= a && a <= b[1]),
-}
+};
 
 const doubleMappedFunctions: mappedFunction = {
     ...integerMappedFunctions
-}
+};
 
 const dateMappedFunctions: mappedFunction = {
     equal: (a: Date, b: Date) => a.getDate() === b.getDate(),
-    not_equal: (a, b) => a.getDate() !== b.getDate(),
+    not_equal: (a: Date, b: Date) => a.getDate() !== b.getDate(),
     in: (a: string, b: Date) => b.toDateString().includes(a),
     not_in: (a: string, b: Date) => !b.toDateString().includes(a),
     less: (a: Date, b: Date) => a < b,
@@ -62,7 +62,7 @@ const dateMappedFunctions: mappedFunction = {
     not_between: (a: Date, b: Date[]) => !(b[0] <= a && a <= b[1]),
     is_null: commonMappedFunctions(isObject).is_null,
     is_not_null: commonMappedFunctions(isObject).is_not_null,
-}
+};
 
 export const mappedFunctions: typedMappedFunction = {
     string: stringMappedFunctions,
